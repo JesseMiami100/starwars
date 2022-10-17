@@ -1,44 +1,36 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			baseUrl: "https://www.swapi.tech/api/",
+			baseImgUrl: "https://starwars-visualguide.com/assets/img/",
+			characters: [],
+			favorites:[],
+			singleCharacter: {},
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			getCharacters: () => {
+				fetch(getStore().baseUrl + 'people')
+				.then(res => res.json())
+				.then(data => setStore({characters:data.results}))
+				.catch(error => console.log(error));
 			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
+			addFavorite: (favorite) => {
+				const newFavorites = getStore().favorites
+				newFavorites.push(favorite)
+				setStore({favorites: newFavorites})
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
+			getSingleCharacter: (characterUrl) => {
+				fectch(characterUrl)
+				.then(res => res.json())
+				.then(data => setStore({singleCharacter: data.result}))
+			},
+			deleteSingleCharacter: (favoriteIndex) => {
+				setStore({favorites: getStore().favorites.filter(
+				 		(favorite, index) => index !== favoriteIndex
+				 	),
 				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
+			},
+		},
 	};
 };
 
